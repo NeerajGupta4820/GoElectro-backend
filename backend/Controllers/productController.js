@@ -1,4 +1,4 @@
-import Product from "../Modals/productModal";
+import Product from "../Modals/productModal.js";
 
 const getAllProduct = async (req, res) => {
     try {
