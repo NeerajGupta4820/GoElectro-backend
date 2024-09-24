@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    catagories:{
+    category:{
         type:String,
         enum:["neckband", "powerbank",  "datacable", "earphone" ,"charger", "bluetoothspeaker", "folder", "phonecover", "earpods"],
         required:true,
@@ -21,11 +21,11 @@ const productSchema = new mongoose.Schema({
     image: [
         {
           color: {
-            type: String,  // The color can be a string representing a color
+            type: String,  
             required: true,
           },
           link: {
-            type: String,  // The link for the image
+            type: String,  
             required: true,
           },
         },
