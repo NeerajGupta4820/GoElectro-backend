@@ -1,6 +1,6 @@
 import express from "express";
-import { checkAdmin } from "../Utils/jwt";
-import { createCategory, deleteCategory, fetchAllCategory, updateCategory } from "../Controllers/categoryController";
+import { checkAdmin } from "../Utils/jwt.js";
+import { createCategory, deleteCategory, fetchAllCategory, updateCategory } from "../Controllers/categoryController.js";
 const categoryRoutes = express.Router();
 
 categoryRoutes.get('/all',fetchAllCategory);
