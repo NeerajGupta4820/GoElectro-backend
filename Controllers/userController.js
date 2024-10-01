@@ -3,7 +3,7 @@ import {generateToken} from "../Utils/jwt.js";
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, type, photo, images } = req.body;
+    const { name, email, password, type, photo } = req.body;
 
     // if the email is already in use
     const existingUser = await User.findOne({ email });
@@ -11,7 +11,7 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists with this email" });
     }
 
-    const user = await User.create({ name, email, password, type, photo, images });
+    const user = await User.create({ name, email, password, type, photo });
 
     const token = generateToken(user._id,user.type);
 
@@ -23,7 +23,6 @@ const createUser = async (req, res) => {
         email: user.email,
         type: user.type,
         photo: user.photo,
-        images: user.images,
       },
       token,
     });
