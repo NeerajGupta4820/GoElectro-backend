@@ -12,7 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/user',userRouter);
-app.use('/api',productRouter);
+app.use('/api/product',productRouter);
 app.use('/api/category',categoryRoutes);
 
 export default app;
