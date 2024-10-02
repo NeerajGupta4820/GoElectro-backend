@@ -3,7 +3,7 @@ import {generateToken} from "../Utils/jwt.js";
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, type, photo } = req.body;
+    const { name, email, password, role, photo } = req.body;
 
     // if the email is already in use
     const existingUser = await User.findOne({ email });
@@ -11,9 +11,9 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists with this email" });
     }
 
-    const user = await User.create({ name, email, password, type, photo });
+    const user = await User.create({ name, email, password, role, photo });
 
-    const token = generateToken(user._id,user.type);
+    const token = generateToken(user._id,user.role);
 
     res.status(201).json({
       success: true,
@@ -21,7 +21,7 @@ const createUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        type: user.type,
+        role: user.role,
         photo: user.photo,
       },
       token,
@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: "Invalid credentials" });
     }
 
-    const token = generateToken(user._id,user.type);
+    const token = generateToken(user._id,user.role);
 
     return res.status(200).json({
       success: true,
@@ -60,9 +60,9 @@ const loginUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        type: user.type,
         photo: user.photo,
         images: user.images,
+        role:user.role
       },
     });
   } catch (error) {

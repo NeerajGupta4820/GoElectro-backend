@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';  
 
-const generateToken = (userId,type) => {
+const generateToken = (userId,role) => {
  
-  const payload = { id: userId, type:type };
+  const payload = { id: userId, role:role };
 
  
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -22,7 +22,7 @@ const checkAdmin = (req,res,next)=>{
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        if (decoded.type === "user") {
+        if (decoded.role === "user") {
             return res.status(403).json({ success: false, message: "Access denied, admin privileges required" });
         }
 

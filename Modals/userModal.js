@@ -19,11 +19,11 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
-  type: {
+  role: {
     type: String,
     enum: ["user", "admin"],  
     default: "user",  
-  }
+  },
 });
 
 // Pre-save middleware to hash the password before saving
