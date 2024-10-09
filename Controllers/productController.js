@@ -1,3 +1,4 @@
+import Category from "../Modals/categoryModal.js";
 import Product from "../Modals/productModal.js";
 
 const getAllProduct = async (req, res) => {
@@ -7,7 +8,7 @@ const getAllProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to fetch products', error: error.message });
     }
-}
+};
 
 const getbyId = async (req, res) => {
     try {
@@ -26,15 +27,30 @@ const getbyId = async (req, res) => {
 
 const addProduct = async (req, res) => {
     try {
-        const { title, description, price, image, category } = req.body;
+        const { title, description, price, category, brand, images } = req.body; 
+        console.log(req.body);
+        
+        const categoryExists = await Category.findById(category);
+        if (!categoryExists) {
+            return res.status(400).json({ success: false, message: 'Category does not exist' });
+        }
 
-        const newProduct = await Product.create({ title, description, image, price, category });
+        const parsedImages = JSON.parse(images); 
+
+        const newProduct = await Product.create({
+            title,
+            description,
+            price,
+            category,
+            brand, 
+            images: parsedImages,
+        });
 
         res.status(201).json({ success: true, product: newProduct });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to add product', error: error.message });
     }
-}
+};
 
 const deleteProduct = async (req, res) => {
     try {
@@ -49,17 +65,18 @@ const deleteProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to delete product', error: error.message });
     }
-}
+};
 
 const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, price, image, category } = req.body;
+        const { title, description, price, category, brand, images } = req.body; 
+        const parsedImages = JSON.parse(images);
 
         const updatedProduct = await Product.findByIdAndUpdate(
-            id, 
-            { title, description, price, image, category }, 
-            { new: true, runValidators: true } 
+            id,
+            { title, description, price, category, brand, images: parsedImages },
+            { new: true, runValidators: true }
         );
 
         if (!updatedProduct) {
@@ -70,7 +87,5 @@ const updateProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to update product', error: error.message });
     }
-}
-
-
+};
 export { getAllProduct, getbyId, addProduct, updateProduct, deleteProduct };
