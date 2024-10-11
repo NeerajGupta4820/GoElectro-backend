@@ -86,4 +86,13 @@ const updateProduct = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to update product', error: error.message });
     }
 };
-export { getAllProduct, getbyId, addProduct, updateProduct, deleteProduct };
+const getLatestProducts = async (req, res) => {
+    try {
+        const latestProducts = await Product.find({}).sort({ createdAt: -1 }).limit(6); 
+
+        res.status(200).json({ success: true, products: latestProducts });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch latest products', error: error.message });
+    }
+};
+export { getAllProduct, getbyId, addProduct, updateProduct, deleteProduct,getLatestProducts };
