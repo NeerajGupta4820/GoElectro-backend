@@ -29,21 +29,18 @@ const addProduct = async (req, res) => {
     try {
         const { title, description, price, category, brand, images } = req.body; 
         console.log(req.body);
-        
+
         const categoryExists = await Category.findById(category);
         if (!categoryExists) {
             return res.status(400).json({ success: false, message: 'Category does not exist' });
         }
-
-        const parsedImages = JSON.parse(images); 
-
         const newProduct = await Product.create({
             title,
             description,
             price,
             category,
             brand, 
-            images: parsedImages,
+            images, 
         });
 
         res.status(201).json({ success: true, product: newProduct });
@@ -51,6 +48,7 @@ const addProduct = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to add product', error: error.message });
     }
 };
+
 
 const deleteProduct = async (req, res) => {
     try {
