@@ -1,19 +1,20 @@
-import User from "../Modals/userModal.js";  
-import {generateToken} from "../Utils/jwt.js";
+import User from "../Modals/userModal.js";
+import { generateToken } from "../Utils/jwt.js";
 
 const createUser = async (req, res) => {
   try {
     const { name, email, password, role, photo } = req.body;
 
-    // if the email is already in use
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this email" });
+      return res
+        .status(400)
+        .json({ message: "User already exists with this email" });
     }
 
     const user = await User.create({ name, email, password, role, photo });
 
-    const token = generateToken(user._id,user.role);
+    const token = generateToken(user._id, user.role);
 
     res.status(201).json({
       success: true,
@@ -51,7 +52,7 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: "Invalid credentials" });
     }
 
-    const token = generateToken(user._id,user.role);
+    const token = generateToken(user._id, user.role);
 
     return res.status(200).json({
       success: true,
@@ -62,7 +63,7 @@ const loginUser = async (req, res) => {
         email: user.email,
         photo: user.photo,
         images: user.images,
-        role:user.role
+        role: user.role,
       },
     });
   } catch (error) {
@@ -70,4 +71,18 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { createUser, loginUser };
+const allUsers=async(req,res)=>{
+  try{
+    const allUsers=await User.find({});
+    res.status(200).json({
+      success:true,
+      users:allUsers,
+    })
+  }
+  catch(error){
+    res.status(500).json({success:false,message:"Failed to fetch all users",error:error.message});
+  }
+}
+
+export { createUser, loginUser,allUsers };
+
