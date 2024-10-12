@@ -101,38 +101,28 @@ const updateProduct = async (req, res) => {
     const { id } = req.params;
     const { title, description, price, category, brand, images } = req.body;
 
-    // Create an update object only with the fields that are provided in req.body
-    const updateFields = {};
-    if (title) updateFields.title = title;
-    if (description) updateFields.description = description;
-    if (price) updateFields.price = price;
-    if (category) updateFields.category = category;
-    if (brand) updateFields.brand = brand;
-    if (images) updateFields.images = JSON.parse(images);
+    const data = await Product.findById(id);
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { $set: updateFields }, 
-      { new: true, runValidators: true }
-    );
+    if(!data) return res.status(404).json({message:"Product not found",error});
 
-    if (!updatedProduct) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found" });
-    }
+    data.title = title || data.title;
+    data.description = description || data.description;
+    data.price = price || data.price;
+    data.category = category || data.category;
+    data.brand = brand || data.brand;
+    data.images = images || data.images;
+    await data.save();
+    res.status(200).json({message:"Product Updated",data});
 
-    res.status(200).json({ success: true, product: updatedProduct });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to update product",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to update product",
+      error: error.message,
+    });
   }
 };
+
 
 const getLatestProducts = async (req, res) => {
   try {
@@ -151,26 +141,11 @@ const getLatestProducts = async (req, res) => {
       });
   }
 };
-
-const getRelatedProducts = async (req, res) => {
-    try {
-        const { id } = req.params;  
-        const product = await Product.findById(id);
-
-        if (!product) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
-        }
-
-        const relatedProducts = await Product.find({
-            _id: { $ne: product._id }, 
-            category: product.category 
-        }).limit(6); 
-
-        res.status(200).json({ success: true, products: relatedProducts });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to fetch related products', error: error.message });
-    }
+export {
+  getAllProduct,
+  getbyId,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  getLatestProducts,
 };
-
-
-export { getAllProduct, getbyId, addProduct, updateProduct, deleteProduct,getLatestProducts,getRelatedProducts};
