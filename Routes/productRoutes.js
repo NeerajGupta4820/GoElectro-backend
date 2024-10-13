@@ -6,8 +6,8 @@ const productRouter = express.Router();
 
 productRouter.get('/allproducts',getAllProduct);
 productRouter.get('/latestproducts', getLatestProducts);
-productRouter.get('/related/:id', getRelatedProducts);
-productRouter.get('/product/:id',getbyId);
+productRouter.get('/related-products/:id', getRelatedProducts);
+productRouter.get('/:id',getbyId);
 productRouter.post('/addproduct',checkAdmin,addProduct);
 productRouter.post('/deleteproduct/:id',checkAdmin,deleteProduct);
 productRouter.post('/updateproduct/:id',checkAdmin,updateProduct);
