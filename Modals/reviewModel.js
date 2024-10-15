@@ -22,14 +22,14 @@ const reviewSchema = new mongoose.Schema({
         required: true,
         maxlength: 500 
     },
-    likes: {
-        type: Number,
-        default: 0
-    },
-    dislikes: {
-        type: Number,
-        default: 0
-    },
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' 
+    }], 
+    dislikes: [{ 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' 
+    }],
     createdAt: {
         type: Date,
         default: Date.now

@@ -1,17 +1,43 @@
 import Review from '../Modals/reviewModel.js';
+import Product from '../Modals/productModal.js';
 
-export const createReview = async (req, res) => {
+export const createOrUpdateReview = async (req, res) => {
     try {
         const { productId, userId, rating, comment } = req.body;
         if (!productId || !userId || !rating || !comment) {
             return res.status(400).json({ success: false, message: 'All fields are required' });
-        }        
-        const review = new Review({productId,userId,rating,comment});
+        }
+        const existingReview = await Review.findOne({ productId, userId });
+        const allReviews = await Review.find({ productId });
+        
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
 
-        await review.save();
-        res.status(201).json({ success: true, review });
+        if (existingReview) {
+            const totalReviews = allReviews.length;
+            const totalRating = allReviews.reduce((sum, review) => sum + review.rating, 0);
+
+            const newTotalRating = totalRating - existingReview.rating + rating; 
+            const newAverageRating = newTotalRating / totalReviews; 
+
+            existingReview.rating = rating; 
+            existingReview.comment = comment;
+            await existingReview.save();
+            await Product.findByIdAndUpdate(productId, { averageRating: newAverageRating });
+            return res.status(200).json({ success: true, review: existingReview });
+        } else {
+            const newReview = new Review({ productId, userId, rating, comment });
+            await newReview.save();
+            const totalRating = allReviews.reduce((sum, review) => sum + review.rating, 0) + rating; 
+            const newAverageRating = totalRating / (allReviews.length + 1); 
+            await Product.findByIdAndUpdate(productId, { averageRating: newAverageRating });
+
+            return res.status(201).json({ success: true, review: newReview });
+        }
     } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
@@ -76,40 +102,43 @@ export const getReviewById = async (req, res) => {
     }
 };
 
-export const likeReview = async (req, res) => {
+export const toggleLikeOrDislike = async (req, res) => {
     try {
-        const { reviewId } = req.params;
-
-        const review = await Review.findById(reviewId);
-        
-        if (!review) {
-            return res.status(404).json({ success: false, message: 'Review not found' });
+      const { reviewId } = req.params;
+      const { action } = req.body;
+      const userId = req.user._id;
+  
+      const review = await Review.findById(reviewId);
+      if (!review) {
+        return res.status(404).json({ success: false, message: 'Review not found' });
+      }
+      if (!review.likes) review.likes = [];
+      if (!review.dislikes) review.dislikes = [];
+      review.likes = review.likes.filter(id => id);
+      review.dislikes = review.dislikes.filter(id => id);
+  
+      if (action === 'like') {
+        if (review.likes.includes(userId)) {
+          review.likes = review.likes.filter(id => id.toString() !== userId.toString());
+        } else {
+          review.likes.push(userId);
+          review.dislikes = review.dislikes.filter(id => id.toString() !== userId.toString());
         }
-
-        review.likes += 1;
-        await review.save();
-
-        res.status(200).json({ success: true, review });
+      } else if (action === 'dislike') {
+        if (review.dislikes.includes(userId)) {
+          review.dislikes = review.dislikes.filter(id => id.toString() !== userId.toString());
+        } else {
+          review.dislikes.push(userId);
+          review.likes = review.likes.filter(id => id.toString() !== userId.toString());
+        }
+      }
+  
+      await review.save();
+  
+      res.status(200).json({ success: true, review });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server error" });
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
     }
 };
-
-export const dislikeReview = async (req, res) => {
-    try {
-        const { reviewId } = req.params;
-
-        const review = await Review.findById(reviewId);
-        
-        if (!review) {
-            return res.status(404).json({ success: false, message: 'Review not found' });
-        }
-
-        review.dislikes += 1;
-        await review.save();
-
-        res.status(200).json({ success: true, review });
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-};
+  
