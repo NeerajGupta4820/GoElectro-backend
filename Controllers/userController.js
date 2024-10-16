@@ -1,4 +1,5 @@
 import User from "../Modals/userModal.js";
+import Cart from "../Modals/cartModal.js"; 
 import { generateToken } from "../Utils/jwt.js";
 
 const createUser = async (req, res) => {
@@ -40,19 +41,22 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    //if the user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "Invalid credentials" });
     }
 
-    // compare password
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) {
       return res.status(404).json({ message: "Invalid credentials" });
     }
 
     const token = generateToken(user._id, user.role);
+
+    const cart = await Cart.findOne({ userId: user._id }).populate({
+      path: 'cartItems.productId',
+      select: 'title price images rating numReviews'
+    });
 
     return res.status(200).json({
       success: true,
@@ -65,24 +69,31 @@ const loginUser = async (req, res) => {
         images: user.images,
         role: user.role,
       },
+      cart: {
+        cartItems: cart ? cart.cartItems : [], 
+        totalAmount: cart ? cart.totalAmount : 0, 
+        totalQuantity: cart ? cart.totalQuantity : 0,
+      }, 
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const allUsers=async(req,res)=>{
-  try{
-    const allUsers=await User.find({});
+const allUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find({});
     res.status(200).json({
-      success:true,
-      users:allUsers,
-    })
+      success: true,
+      users: allUsers,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch all users",
+      error: error.message,
+    });
   }
-  catch(error){
-    res.status(500).json({success:false,message:"Failed to fetch all users",error:error.message});
-  }
-}
+};
 
-export { createUser, loginUser,allUsers };
-
+export { createUser, loginUser, allUsers };
