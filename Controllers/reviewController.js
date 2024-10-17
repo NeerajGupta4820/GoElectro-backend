@@ -25,36 +25,19 @@ export const createOrUpdateReview = async (req, res) => {
             existingReview.rating = rating; 
             existingReview.comment = comment;
             await existingReview.save();
-            await Product.findByIdAndUpdate(productId, { averageRating: newAverageRating });
+            await Product.findByIdAndUpdate(productId, { ratings: newAverageRating });
             return res.status(200).json({ success: true, review: existingReview });
         } else {
             const newReview = new Review({ productId, userId, rating, comment });
             await newReview.save();
             const totalRating = allReviews.reduce((sum, review) => sum + review.rating, 0) + rating; 
             const newAverageRating = totalRating / (allReviews.length + 1); 
-            await Product.findByIdAndUpdate(productId, { averageRating: newAverageRating });
+            await Product.findByIdAndUpdate(productId, { ratings: newAverageRating });
 
             return res.status(201).json({ success: true, review: newReview });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error" });
-    }
-};
-
-export const updateReview = async (req, res) => {
-    try {
-        const { reviewId } = req.params;
-        const updates = req.body;
-
-        const review = await Review.findByIdAndUpdate(reviewId, updates, { new: true });
-        
-        if (!review) {
-            return res.status(404).json({ success: false, message: 'Review not found' });
-        }
-
-        res.status(200).json({ success: true, review });
-    } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
