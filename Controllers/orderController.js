@@ -1,5 +1,6 @@
 import Order from "../Modals/orderModel.js";
 import User from "../Modals/userModal.js";
+import Product from "../Modals/productModal.js";
 
 // Get all orders
 const getAllOrders = async (req, res) => {
@@ -38,6 +39,7 @@ const getOrderById = async (req, res) => {
 const addOrder = async (req, res) => {
     try {
       const {shippingInfo,subtotal,tax,shippingCharges,discount,total,orderItems,user,} = req.body;
+      console.log(req.body);
   
       const userExists = await User.findById(user);
       if (!userExists) {
@@ -45,9 +47,9 @@ const addOrder = async (req, res) => {
       }
   
       for (const item of orderItems) {
-        const product = await Product.findById(item.product);
+        const product = await Product.findById(item.productId);
         if (!product) {
-          return res.status(404).json({ success: false, message: `Product not found: ${item.product}` });
+          return res.status(404).json({ success: false, message: `Product not found: ${item.name}` });
         }
   
         if (product.stock < item.quantity) {
@@ -58,9 +60,8 @@ const addOrder = async (req, res) => {
         }
       }
   
-      // Reduce stock for each order item
       for (const item of orderItems) {
-        const product = await Product.findById(item.product);
+        const product = await Product.findById(item.productId);
         product.stock -= item.quantity;
         await product.save();
       }
