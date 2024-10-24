@@ -41,7 +41,7 @@ const getbyId = async (req, res) => {
 
 const addProduct = async (req, res) => {
   try {
-    const { title, description, price, category, brand, images } = req.body;
+    const { title, description, price, category, brand, images,stock } = req.body;
     console.log(req.body);
 
     const categoryExists = await Category.findById(category);
@@ -57,6 +57,7 @@ const addProduct = async (req, res) => {
       category,
       brand,
       images,
+      stock
     });
 
     res.status(201).json({ success: true, product: newProduct });
@@ -99,7 +100,7 @@ const deleteProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, price, category, brand, images } = req.body;
+    const { title, description, price, category, brand, images,stock } = req.body;
 
     const data = await Product.findById(id);
 
@@ -110,6 +111,7 @@ const updateProduct = async (req, res) => {
     data.price = price || data.price;
     data.category = category || data.category;
     data.brand = brand || data.brand;
+    data.stock = stock || data.stock;
     data.images = images || data.images;
     await data.save();
     res.status(200).json({message:"Product Updated",data});
