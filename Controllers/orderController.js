@@ -1,4 +1,4 @@
-import Order from "../Modals/orderModal.js";
+import Order from "../Modals/orderModel.js";
 import User from "../Modals/userModal.js";
 
 // Get all orders
