@@ -39,7 +39,6 @@ const getOrderById = async (req, res) => {
 const addOrder = async (req, res) => {
     try {
       const {shippingInfo,subtotal,tax,shippingCharges,discount,total,orderItems,user,} = req.body;
-      console.log(req.body);
   
       const userExists = await User.findById(user);
       if (!userExists) {
