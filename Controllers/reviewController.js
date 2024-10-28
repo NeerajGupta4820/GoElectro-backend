@@ -1,7 +1,7 @@
 import Review from '../Modals/reviewModel.js';
 import Product from '../Modals/productModal.js';
 
-export const createOrUpdateReview = async (req, res) => {
+const createOrUpdateReview = async (req, res) => {
     try {
         const { productId, userId, rating, comment } = req.body;
         if (!productId || !userId || !rating || !comment) {
@@ -41,7 +41,7 @@ export const createOrUpdateReview = async (req, res) => {
     }
 };
 
-export const deleteReview = async (req, res) => {
+const deleteReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
 
@@ -57,7 +57,7 @@ export const deleteReview = async (req, res) => {
     }
 };
 
-export const getReviewsByProductId = async (req, res) => {
+const getReviewsByProductId = async (req, res) => {
     try {
         const { productId } = req.params;
 
@@ -69,7 +69,7 @@ export const getReviewsByProductId = async (req, res) => {
     }
 };
 
-export const getReviewById = async (req, res) => {
+const getReviewById = async (req, res) => {
     try {
         const { reviewId } = req.params;
 
@@ -85,7 +85,7 @@ export const getReviewById = async (req, res) => {
     }
 };
 
-export const toggleLikeOrDislike = async (req, res) => {
+const toggleLikeOrDislike = async (req, res) => {
     try {
       const { reviewId } = req.params;
       const { action } = req.body;
@@ -125,3 +125,4 @@ export const toggleLikeOrDislike = async (req, res) => {
     }
 };
   
+export {createOrUpdateReview,deleteReview,getReviewsByProductId,getReviewById,toggleLikeOrDislike};
