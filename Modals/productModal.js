@@ -32,6 +32,12 @@ const productSchema = new mongoose.Schema({
             ],
         },
     ],
+    coupon: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Coupon",
+        }
+    ],
     stock: {
         type: Number,
         required: true,
