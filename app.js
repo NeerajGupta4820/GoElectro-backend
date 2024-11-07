@@ -7,6 +7,7 @@ import cors from "cors"
 import cartRouter from "./Routes/cartRoutes.js";
 import orederRouter from "./Routes/orderRotues.js";
 import couponRoutes from "./Routes/couponRoutes.js";
+import chartRoutes from "./Routes/chartRoutes.js";
 const app = express();
 
 app.use(cors());
@@ -22,5 +23,6 @@ app.use('/api/review',reviewRoutes);
 app.use('/api/cart',cartRouter);
 app.use('/api/order',orederRouter);
 app.use('/api/coupon',couponRoutes);
+app.use('/api/chart',chartRoutes);
 
 export default app;

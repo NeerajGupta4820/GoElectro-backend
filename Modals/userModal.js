@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,  
   },
+  age:{
+    type:Number
+  },
   photo: {
     type: String,
   },
@@ -23,6 +26,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["user", "admin"],  
     default: "user",  
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
