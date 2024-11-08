@@ -2,6 +2,7 @@ import Order from "../Modals/orderModel.js";
 import Product from "../Modals/productModal.js"
 import User from "../Modals/userModal.js";
 
+
 // product category number
 // product stock
 const product = async(req,res)=>{
