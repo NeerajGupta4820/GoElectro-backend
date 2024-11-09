@@ -1,3 +1,5 @@
+import admin from "../Utils/FirebaseAdmin.js"; 
+import bcryptjs from "bcryptjs";
 import User from "../Modals/userModal.js";
 import Cart from "../Modals/cartModal.js"; 
 import { generateToken } from "../Utils/jwt.js";
@@ -40,7 +42,6 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "Invalid credentials" });
@@ -76,6 +77,49 @@ const loginUser = async (req, res) => {
       }, 
     });
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const googleLogin = async (req, res) => {
+  try {
+    const { email, name, photo } = req.body;
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader) {
+      return res.status(401).json({ message: "Authorization header missing" });
+    }
+    const firebaseToken = authorizationHeader.split(" ")[1];
+    const decodedToken = await admin.auth().verifyIdToken(firebaseToken);
+    if (!decodedToken) {
+      return res.status(401).json({ message: "Invalid Firebase token" });
+    }
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({ name, email, photo, password: bcryptjs.hashSync("google-auth", 10) });
+    }
+    const token = generateToken(user._id, user.role);
+    const cart = await Cart.findOne({ userId: user._id }).populate({
+      path: "cartItems.productId",
+      select: "title price images rating numReviews",
+    });
+    return res.status(200).json({
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        photo: user.photo,
+        role: user.role,
+      },
+      cart: {
+        cartItems: cart ? cart.cartItems : [],
+        totalAmount: cart ? cart.totalAmount : 0,
+        totalQuantity: cart ? cart.totalQuantity : 0,
+      },
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -128,6 +172,27 @@ const updateUser = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  const { email, newPassword, confirmPassword } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    const salt = await bcryptjs.genSalt(10); 
+    user.password = newPassword; 
+    await user.save();
+
+    return res.status(200).json({ message: "Password has been reset successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
+};
 
 
-export { createUser, loginUser, allUsers, updateUser };
+export { createUser, loginUser, allUsers, updateUser,resetPassword,googleLogin };

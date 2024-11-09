@@ -98,17 +98,25 @@ const updateCart = async (req, res) => {
   const { cartItems, totalQuantity, totalAmount } = req.body.cart; 
   try {
     let cart = await Cart.findOne({ userId: req.user.id });
+
     if (!cart) {
-      return res.status(200).json({ success: true, message: 'Cart updated successfully' }); 
+      cart = new Cart({
+        userId: req.user.id,
+        cartItems: cartItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+        totalQuantity,
+        totalAmount,
+      });
+    } else {
+      cart.cartItems = cartItems.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
+      cart.totalQuantity = totalQuantity;
+      cart.totalAmount = totalAmount;
     }
-
-    cart.cartItems = cartItems.map(item => ({
-      productId: item.productId,
-      quantity: item.quantity,
-    }));
-
-    cart.totalQuantity = totalQuantity;
-    cart.totalAmount = totalAmount;
 
     await cart.save();
 
@@ -119,6 +127,7 @@ const updateCart = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };
+
 
 
 
