@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 import admin from "../Utils/FirebaseAdmin.js"; 
-import User from "../Modals/userModal.js";
 import bcryptjs from "bcryptjs";
-=======
 import User from "../Modals/userModal.js";
->>>>>>> 157d137aa5c9604af668c4ab30334322bdc6df66
 import Cart from "../Modals/cartModal.js"; 
 import { generateToken } from "../Utils/jwt.js";
 
@@ -46,10 +42,6 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-<<<<<<< HEAD
-=======
-
->>>>>>> 157d137aa5c9604af668c4ab30334322bdc6df66
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "Invalid credentials" });
@@ -89,7 +81,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 const googleLogin = async (req, res) => {
   try {
     const { email, name, photo } = req.body;
@@ -133,9 +124,6 @@ const googleLogin = async (req, res) => {
   }
 };
 
-
-=======
->>>>>>> 157d137aa5c9604af668c4ab30334322bdc6df66
 const allUsers = async (req, res) => {
   try {
     const allUsers = await User.find({});
@@ -184,7 +172,6 @@ const updateUser = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 const resetPassword = async (req, res) => {
   const { email, newPassword, confirmPassword } = req.body;
   try {
@@ -209,8 +196,3 @@ const resetPassword = async (req, res) => {
 
 
 export { createUser, loginUser, allUsers, updateUser,resetPassword,googleLogin };
-=======
-
-
-export { createUser, loginUser, allUsers, updateUser };
->>>>>>> 157d137aa5c9604af668c4ab30334322bdc6df66
