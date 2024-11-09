@@ -4,7 +4,7 @@ import { generateToken } from "../Utils/jwt.js";
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, role, photo } = req.body;
+    const { name, email, password, role, photo, age } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -13,7 +13,7 @@ const createUser = async (req, res) => {
         .json({ message: "User already exists with this email" });
     }
 
-    const user = await User.create({ name, email, password, role, photo });
+    const user = await User.create({ name, email, password, role, photo, age });
 
     const token = generateToken(user._id, user.role);
 
