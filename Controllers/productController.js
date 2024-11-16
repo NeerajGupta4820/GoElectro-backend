@@ -3,7 +3,8 @@ import Product from "../Modals/productModal.js";
 
 const getAllProduct = async (req, res) => {
   try {
-    const allProducts = await Product.find({});
+    const allProducts = await Product.find({})
+    .populate('category', 'name slug');
     res.status(200).json({ success: true, products: allProducts });
   } catch (error) {
     res
