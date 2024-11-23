@@ -24,13 +24,13 @@ const addOrder = async (req, res) => {
     }
 
     const razorpayOptions = {
-      amount: total * 100, // Amount in paise
+      amount: Math.round(total * 100), // Amount in paise
       currency: "INR",
       receipt: crypto.randomBytes(10).toString("hex"),
       payment_capture: 1,
     };
     const razorpayOrder = await razorpay.orders.create(razorpayOptions);
-
+    console.log("Razorpay order amount:", razorpayOrder.amount);
     const newOrder = new Order({
       shippingInfo,
       subtotal,
